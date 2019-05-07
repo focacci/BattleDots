@@ -3,10 +3,7 @@ var keyPressed = {
   "a": false,
   "s": false,
   "d": false,
-  "ArrowUp": false,
-  "ArrowDown": false,
-  "ArrowLeft": false,
-  "ArrowRight": false
+  "space": false,
 };
 
 function setState(key, value) {
@@ -23,14 +20,8 @@ function handleEvent(event, toSet) {
     setState("s", toSet);
   } else if (event.key === "d") {
     setState("d", toSet);
-  } else if (event.key === "ArrowUp") {
-    setState("ArrowUp", toSet);
-  } else if (event.key === "ArrowDown") {
-    setState("ArrowDown", toSet);
-  } else if (event.key === "ArrowLeft") {
-    setState("ArrowLeft", toSet);
-  } else if (event.key === "ArrowRight") {
-    setState("ArrowRight, toSet");
+  } else if (event.key === "space") {
+    setState("space", toSet);
   }
 }
 

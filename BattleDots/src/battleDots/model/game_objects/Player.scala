@@ -1,6 +1,7 @@
 package battleDots.model.game_objects
 
 import battleDots.model.physics.PhysicsVector
+import play.api.libs.json.{JsValue, Json}
 
 class Player(
             in_location: PhysicsVector,
@@ -17,20 +18,18 @@ class Player(
   }
 
   def stop(): Unit = {
-    this.velocity.x = 0
-    this.velocity.y = 0
+    this.velocity = new PhysicsVector(0, 0)
   }
 
   override def hit(): Unit = {
     this.health -= 1
     if (this.health <= 0) {
       this.location = this.in_location
-      this.velocity = new PhysicsVector(0,0)
     }
   }
 
   override def collide(): Unit = {
-    this.velocity = new PhysicsVector(0, 0)
+    this.stop()
   }
 
 

@@ -64,6 +64,7 @@ def key_state(json_inputs):
 
     x = 0.0
     y = 0.0
+    fire = False
 
     if inputs["a"] and not inputs["d"]:
         x = -1.0
@@ -73,27 +74,23 @@ def key_state(json_inputs):
         y = -1.0
     elif inputs["s"] and not inputs["w"]:
         y = 1.0
-    message = {"username": request.sid, "action": "move", "x": x, "y": y}
-    send_to_scala(message)
-
-@socket_server.on('fire')
-def fire(json_bullet):
-    bullet = json.loads(json_bullet)
-    location = bullet["location"]
-    velocity = bullet["velocity"]
-    message = {"location": location, "velocity": velocity}
+    if inputs["space"]:
+        fire = True
+    message = {"username": request.sid, "action": "move", "x": x, "y": y, "fire": fire}
     send_to_scala(message)
 
 
 @app.route('/')
 def index():
+    print("sending: index.html")
     return send_from_directory('staticfiles', 'index.html')
 
 
 @app.route('/<path:filename>')
 def static_files(filename):
+    print("sending: " + filename)
     return send_from_directory('staticfiles', filename)
 
 
-print("Listening on port 8080")
+print("Listening on port 8000")
 socket_server.run(app, port=8000)

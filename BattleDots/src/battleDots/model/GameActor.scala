@@ -13,7 +13,7 @@ case class StopPlayer(username: String)
 case class GameState(state: String)
 case object Update
 case object SendGameState
-case class Fire(location: PhysicsVector, velocity: PhysicsVector)
+case class Fire(username: String)
 
 
 class GameActor extends Actor {
@@ -40,8 +40,8 @@ class GameActor extends Actor {
     case SendGameState =>
       sender() ! GameState(this.game.gameState())
 
-    case bullet: Fire =>
-      this.game.fire(bullet.location, bullet.velocity)
+    case f: Fire =>
+      this.game.fire(f.username)
   }
 
 

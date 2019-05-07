@@ -7,7 +7,7 @@ import play.api.libs.json.{JsValue, Json}
 class Game {
 
   val world: World = new World(0)
-  var bullets: List[Bullet] = List()
+
   var players: Map[String, Player] = Map()
   var player_size: Double = 1.0
   var time: Long = System.nanoTime()
@@ -15,10 +15,11 @@ class Game {
   var width: Int = 600
   var height: Int = 600
 
+  var bulletSpeed: Int = 5
+  val sightRange: Int = 30
+
   def addPlayer(username: String): Unit = {
-    val player: Player = new Player(
-      startVector(),
-      new PhysicsVector(0,0))
+    val player: Player = new Player(startVector(), new PhysicsVector(0,0))
     this.players += (username -> player)
     this.world.players = player :: this.world.players
   }
@@ -38,16 +39,6 @@ class Game {
     Physics.updateGame(this, dt)
   }
 
-  def playersHit(): Unit = {
-    for ((_, player) <- this.players) {
-      for (bullet <- this.bullets) {
-        if (player.location.distanceFrom(bullet.location) < player_size) {
-          player.destroy()
-        }
-      }
-    }
-  }
-
   def gameState(): String = {
     val gameState: Map[String, JsValue] = Map(
       "gridDimensions" -> Json.toJson(Map(
@@ -62,16 +53,38 @@ class Game {
           "y" -> Json.toJson(player.velocity.y))),
         "health" -> Json.toJson(this.players(name).health),
         "username" -> Json.toJson(name)))})),
-      "bullets" -> Json.toJson(this.bullets.map({bullet =>Json.toJson(Map(
+      "bullets" -> Json.toJson(this.world.bullets.map({bullet =>Json.toJson(Map(
         "x" -> bullet.location.x,
         "y" -> bullet.location.y))}))
     )
     Json.stringify(Json.toJson(gameState))
   }
 
-  def fire(location: PhysicsVector, velocity: PhysicsVector): Unit = {
-    this.bullets = List(new Bullet(location, velocity)) ::: this.bullets
+  def fire(username: String): Unit = { // fires a bullet at each player in range
+    val playerLocation: PhysicsVector = this.players(username).location
+    for (player <- playersInRange(username)) {
+      val bullet: Bullet = new Bullet(playerLocation,
+        new PhysicsVector(playerLocation.x - player.x, playerLocation.y - player.y).correctMagnitude(bulletSpeed)
+      )
+      this.world.bullets = bullet :: this.world.bullets
+    }
   }
+
+
+  def playersInRange(username: String): List[PhysicsVector] = {
+    val player: PhysicsVector = this.players(username).location
+    val otherPlayers = this.players - username
+    var playersInRange: List[PhysicsVector] = List()
+
+    for ((_,otherPlayer) <- otherPlayers) {
+      if (player.distanceFrom(otherPlayer.location) <= this.sightRange) {
+        playersInRange = otherPlayer.location :: playersInRange
+      }
+    }
+    playersInRange
+  }
+
+
 
 
 }

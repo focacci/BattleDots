@@ -22,4 +22,11 @@ class PhysicsVector(
     "(" + this.x + ", " + this.y + ")"
   }
 
+  def correctMagnitude(magnitude: Double): PhysicsVector = {
+    val vector = this.unitVector()
+    vector.x *= magnitude
+    vector.y *= magnitude
+    vector
+  }
+
 }

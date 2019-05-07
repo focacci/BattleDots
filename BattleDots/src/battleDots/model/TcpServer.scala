@@ -5,6 +5,7 @@ import java.net.InetSocketAddress
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.io.{IO, Tcp}
 import akka.util.ByteString
+import battleDots.model.physics.PhysicsVector
 import play.api.libs.json.{JsValue, Json}
 
 
@@ -14,7 +15,7 @@ class TcpServer(gameActor: ActorRef) extends Actor {
   import Tcp._
   import context.system
 
-  IO(Tcp) ! Bind(self, new InetSocketAddress("localhost", 8000))
+  IO(Tcp) ! Bind(self, new InetSocketAddress("localhost", 4242))
 
   var webServers: Set[ActorRef] = Set()
   var buffer: String = ""
@@ -53,6 +54,7 @@ class TcpServer(gameActor: ActorRef) extends Actor {
     val message: JsValue = Json.parse(messageString)
     val username = (message \ "username").as[String]
     val messageType = (message \ "action").as[String]
+    val fire = (message \ "fire").as[Boolean]
 
     messageType match {
       case "connected" => gameActor ! AddPlayer(username)
@@ -62,6 +64,9 @@ class TcpServer(gameActor: ActorRef) extends Actor {
         val y = (message \ "y").as[Double]
         gameActor ! MovePlayer(username, x, y)
       case "stop" => gameActor ! StopPlayer(username)
+    }
+    if (fire) {
+      gameActor ! Fire(username)
     }
   }
 
