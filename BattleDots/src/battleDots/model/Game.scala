@@ -19,7 +19,7 @@ class Game {
   val sightRange: Int = 30
 
   def addPlayer(username: String): Unit = {
-    val player: Player = new Player(startVector(), new PhysicsVector(0,0))
+    val player: Player = new Player(username, startVector(), new PhysicsVector(0,0))
     this.players += (username -> player)
     this.world.players = player :: this.world.players
   }
@@ -63,8 +63,8 @@ class Game {
   def fire(username: String): Unit = { // fires a bullet at each player in range
     val playerLocation: PhysicsVector = this.players(username).location
     for (player <- playersInRange(username)) {
-      val bullet: Bullet = new Bullet(playerLocation,
-        new PhysicsVector(playerLocation.x - player.x, playerLocation.y - player.y).correctMagnitude(bulletSpeed)
+      val bullet: Bullet = new Bullet(username, playerLocation,
+        new PhysicsVector(player.x - playerLocation.x, player.y - playerLocation.y).correctMagnitude(bulletSpeed)
       )
       this.world.bullets = bullet :: this.world.bullets
     }

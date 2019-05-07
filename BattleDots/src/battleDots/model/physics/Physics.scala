@@ -43,8 +43,8 @@ object Physics {
     for (player <- world.players) {
       for (bullet <- world.bullets) {
         if (player.location.distanceFrom(bullet.location) <= game.player_size) {
-          player.hit()
-          bullet.hit()
+          player.hitBy(bullet)
+          bullet.hit(player)
         }
       }
     }

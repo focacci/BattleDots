@@ -4,6 +4,7 @@ import battleDots.model.physics.PhysicsVector
 import play.api.libs.json.{JsValue, Json}
 
 class Player(
+            val name: String,
             in_location: PhysicsVector,
             in_velocity: PhysicsVector
             ) extends PhysicalObject(in_location, in_velocity) {
@@ -21,9 +22,11 @@ class Player(
     this.velocity = new PhysicsVector(0, 0)
   }
 
-  override def hit(): Unit = {
-    this.health -= 1
-    if (this.health <= 0) {
+  def hitBy(bullet: Bullet): Unit = {
+    if (this.name != bullet.shooter) {
+      this.health -= 1
+    }
+    if (this.health < 1) {
       this.location = this.in_location
     }
   }

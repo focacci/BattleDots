@@ -76,6 +76,7 @@ def key_state(json_inputs):
         y = 1.0
     if inputs["space"]:
         fire = True
+
     message = {"username": request.sid, "action": "move", "x": x, "y": y, "fire": fire}
     send_to_scala(message)
 

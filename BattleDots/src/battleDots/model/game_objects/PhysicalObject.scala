@@ -7,8 +7,6 @@ class PhysicalObject(
                     var velocity: PhysicsVector
                     ) extends GameObject {
 
-  def hit(): Unit = {}
-
   def collide(): Unit = {}
 
   override def toString = s"PhysicalObject($location, $velocity)"
