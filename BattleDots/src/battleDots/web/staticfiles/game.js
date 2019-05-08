@@ -1,9 +1,11 @@
 var socket = io.connect({transports: ['websocket']});
 socket.on('gameState', displayGame);
 
-var GAME = document.getElementById("game");
+var GAME = document.getElementById("GAME");
 var context = GAME.getContext("2d");
 context.globalCompositeOperation = 'source-over';
+
+//const scaleFactor = 20;
 
 function displayGame(json_game) {
   console.log(json_game);
@@ -17,11 +19,11 @@ function displayGame(json_game) {
   var bullets = game["bullets"];
 
   for (let p of players) {
-    circle(p["location"]["x"], p["location"]["y"], 50, p["username"] === socket.id ? '#0ec51f' : '#ce000d');
+    circle(p["location"]["x"], p["location"]["y"], 10, p["username"] === socket.id ? '#0ec51f' : '#ce000d');
   }
 
   for (let b of bullets) {
-    circle(b["location"]["x"], b["location"]["y"], 20, '#000000')
+    circle(b["location"]["x"], b["location"]["y"], 3, '#000000');
   }
 }
 
@@ -42,6 +44,7 @@ function circle(x, y, size, color) {
 function makeGameGrid(width, height) {
   context.clearRect(0, 0, width, height);
   context.strokeStyle = '#000000';
+
 
   GAME.setAttribute("width", width);
   GAME.setAttribute("height", height);

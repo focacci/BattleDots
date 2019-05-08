@@ -10,7 +10,7 @@ import eventlet
 eventlet.monkey_patch()
 
 app = Flask(__name__)
-socket_server = SocketIO(app)
+server = SocketIO(app)
 
 # ** Connect to Scala TCP socket server **
 
@@ -28,11 +28,11 @@ def listen_to_scala(the_socket):
         while delimiter in buffer:
             message = buffer[:buffer.find(delimiter)]
             buffer = buffer[buffer.find(delimiter) + 1:]
-            get_from_scala(message)
+            send_to_clients(message)
 
 
-def get_from_scala(data):
-    socket_server.emit('gameState', data, broadcast=True)
+def send_to_clients(data):
+    server.emit('gameState', data, broadcast=True)
 
 
 def send_to_scala(data):
@@ -44,23 +44,24 @@ Thread(target=listen_to_scala, args=(scala_socket,)).start()
 
 # ** Setup and start Python web server **
 
-@socket_server.on('connect')
+@server.on('connect')
 def got_message():
     print(request.sid + " connected")
     message = {"username": request.sid, "action": "connected"}
     send_to_scala(message)
 
 
-@socket_server.on('disconnect')
+@server.on('disconnect')
 def disconnect():
     print(request.sid + " disconnected")
     message = {"username": request.sid, "action": "disconnected"}
     send_to_scala(message)
 
 
-@socket_server.on('inputs')
+@server.on('inputs')
 def key_state(json_inputs):
     inputs = json.loads(json_inputs)
+    print("Received inputs: " + json_inputs)
 
     x = 0.0
     y = 0.0
@@ -70,10 +71,12 @@ def key_state(json_inputs):
         x = -1.0
     elif inputs["d"] and not inputs["a"]:
         x = 1.0
+
     if inputs["w"] and not inputs["s"]:
         y = -1.0
     elif inputs["s"] and not inputs["w"]:
         y = 1.0
+
     if inputs["space"]:
         fire = True
 
@@ -93,5 +96,5 @@ def static_files(filename):
     return send_from_directory('staticfiles', filename)
 
 
-print("Listening on port 8000")
-socket_server.run(app, port=8000)
+print("Listening on port 1234")
+server.run(app, port=1234)

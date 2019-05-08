@@ -27,12 +27,12 @@ class TcpServer(gameActor: ActorRef) extends Actor {
 
     case c: Connected =>
       println("Client Connected: " + c.remoteAddress)
-      this.webServers = this.webServers + sender()
+      this.webServers += sender()
       sender() ! Register(self)
 
     case PeerClosed =>
       println("Client Disconnected: " + sender())
-      this.webServers = this.webServers - sender()
+      this.webServers -= sender()
 
     case r: Received =>
       buffer += r.data.utf8String
@@ -51,10 +51,12 @@ class TcpServer(gameActor: ActorRef) extends Actor {
   }
 
 
-  def handleMessageFromWebServer(messageString:String): Unit = {
+  def handleMessageFromWebServer(messageString: String): Unit = {
     val message: JsValue = Json.parse(messageString)
     val username = (message \ "username").as[String]
     val messageType = (message \ "action").as[String]
+
+    println("Received message: " + message.toString())
 
     messageType match {
       case "connected" => gameActor ! AddPlayer(username)
@@ -63,8 +65,7 @@ class TcpServer(gameActor: ActorRef) extends Actor {
         val x = (message \ "x").as[Double]
         val y = (message \ "y").as[Double]
         gameActor ! MovePlayer(username, x, y)
-        val fire = (message \ "fire").as[Boolean]
-        if (fire) {
+        if ((message \ "fire").as[Boolean]) {
           gameActor ! Fire(username)
         }
       case "stop" => gameActor ! StopPlayer(username)

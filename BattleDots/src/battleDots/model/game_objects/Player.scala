@@ -1,7 +1,6 @@
 package battleDots.model.game_objects
 
 import battleDots.model.physics.PhysicsVector
-import play.api.libs.json.{JsValue, Json}
 
 class Player(
             val name: String,
@@ -13,9 +12,10 @@ class Player(
   var health: Int = 5
 
   def move(dir: PhysicsVector): Unit = {
-    val unit_direction = dir.unitVector()
-    this.velocity.x = unit_direction.x * speed
-    this.velocity.y = unit_direction.y * speed
+    val direction: PhysicsVector = dir.unitVector()
+    this.velocity.x = direction.x
+    this.velocity.y = direction.y
+    println("New velocity:  " + this.velocity.toString)
   }
 
   def stop(): Unit = {

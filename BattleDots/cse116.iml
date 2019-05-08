@@ -36,5 +36,6 @@
     <orderEntry type="library" name="Maven: com.squareup.okio:okio:1.13.0" level="project" />
     <orderEntry type="library" name="Maven: org.json:json:20090211" level="project" />
     <orderEntry type="library" name="scala-sdk-2.12.8" level="application" />
+    <orderEntry type="library" name="socket.io" level="application" />
   </component>
 </module>

@@ -20,6 +20,7 @@ class GameActor extends Actor {
       this.game.removePlayer(m.username)
 
     case m: MovePlayer =>
+      println("Moving player: " + m.username)
       this.game.players(m.username).move(new PhysicsVector(m.x, m.y))
 
     case m: StopPlayer =>

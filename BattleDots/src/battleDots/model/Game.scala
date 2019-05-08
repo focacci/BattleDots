@@ -6,17 +6,17 @@ import play.api.libs.json.{JsValue, Json}
 
 class Game {
 
-  val world: World = new World(0)
+  val world: World = new World
 
   var players: Map[String, Player] = Map()
-  var player_size: Double = 1.0
+  var player_size: Double = 3.0
   var time: Long = System.nanoTime()
 
-  var width: Int = 600
-  var height: Int = 600
+  var width: Int = 500
+  var height: Int = 300
 
-  var bulletSpeed: Int = 5
-  val sightRange: Int = 30
+  var bulletSpeed: Int = 2
+  val sightRange: Int = 10
 
   def addPlayer(username: String): Unit = {
     val player: Player = new Player(username, startVector(), new PhysicsVector(0,0))
@@ -30,13 +30,14 @@ class Game {
   }
 
   def startVector(): PhysicsVector = {
-    new PhysicsVector(1, 1)
+    new PhysicsVector(250, 150)
   }
 
   def update(): Unit = {
     val t: Long = System.nanoTime()
     val dt = (t - this.time) / 1000000000.0
     Physics.updateGame(this, dt)
+    checkForHits()
   }
 
   def gameState(): String = {
@@ -48,9 +49,6 @@ class Game {
         "location" -> Json.toJson(Map(
           "x" -> Json.toJson(player.location.x),
           "y" -> Json.toJson(player.location.y))),
-        "velocity" -> Json.toJson(Map(
-          "x" -> Json.toJson(player.velocity.x),
-          "y" -> Json.toJson(player.velocity.y))),
         "health" -> Json.toJson(this.players(name).health),
         "username" -> Json.toJson(name)))})),
       "bullets" -> Json.toJson(this.world.bullets.map({bullet =>Json.toJson(Map(
@@ -84,6 +82,16 @@ class Game {
     playersInRange
   }
 
+  def checkForHits(): Unit = {
+    for (player <- this.world.players) {
+      for (bullet <- this.world.bullets) {
+        if (player.location.distanceFrom(bullet.location) < this.player_size) {
+          player.hitBy(bullet)
+          bullet.hit(player)
+        }
+      }
+    }
+  }
 
 
 

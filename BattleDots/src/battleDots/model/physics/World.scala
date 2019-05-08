@@ -1,14 +1,16 @@
 package battleDots.model.physics
 
-import battleDots.model.game_objects.{Boundary, Bullet, PhysicalObject, Player}
+import battleDots.model.game_objects.{Bullet, PhysicalObject, Player}
 
-class World(var g: Double) {
+class World {
 
   var players: List[Player] = List()
   var bullets: List[Bullet] = List()
-  var boundaries: List[Boundary] = List()
+  var objects: List[PhysicalObject] = all_objects()
 
-  def objects(): List[PhysicalObject] = {
-    players ::: bullets
+  def all_objects(): List[PhysicalObject] = {
+    this.players ::: this.bullets
   }
+
+
 }

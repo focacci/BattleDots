@@ -3,12 +3,12 @@ var keyPressed = {
   "a": false,
   "s": false,
   "d": false,
-  "space": false,
+  "space": false
 };
 
 function setState(key, value) {
   keyPressed[key] = value;
-  socket.emit("inputs", JSON.stringify(keyPressed));
+  socket.emit('inputs', JSON.stringify(keyPressed));
 }
 
 function handleEvent(event, toSet) {
@@ -26,9 +26,9 @@ function handleEvent(event, toSet) {
 }
 
 document.addEventListener("keydown", function (event) {
-  handleEvent(event, true);
+  handleEvent(event, true)
 });
 
 document.addEventListener("keyup", function (event) {
-  handleEvent(event, false);
+  handleEvent(event, false)
 });
