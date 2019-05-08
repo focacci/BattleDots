@@ -36,6 +36,7 @@ class TcpServer(gameActor: ActorRef) extends Actor {
 
     case r: Received =>
       buffer += r.data.utf8String
+      println(r.data.utf8String)
       while (buffer.contains(delimiter)) {
         val curr = buffer.substring(0, buffer.indexOf(delimiter))
         buffer = buffer.substring(buffer.indexOf(delimiter) + 1)
@@ -54,7 +55,6 @@ class TcpServer(gameActor: ActorRef) extends Actor {
     val message: JsValue = Json.parse(messageString)
     val username = (message \ "username").as[String]
     val messageType = (message \ "action").as[String]
-    val fire = (message \ "fire").as[Boolean]
 
     messageType match {
       case "connected" => gameActor ! AddPlayer(username)
@@ -63,23 +63,24 @@ class TcpServer(gameActor: ActorRef) extends Actor {
         val x = (message \ "x").as[Double]
         val y = (message \ "y").as[Double]
         gameActor ! MovePlayer(username, x, y)
+        val fire = (message \ "fire").as[Boolean]
+        if (fire) {
+          gameActor ! Fire(username)
+        }
       case "stop" => gameActor ! StopPlayer(username)
     }
-    if (fire) {
-      gameActor ! Fire(username)
-    }
+
   }
 
 }
 
 
-object TCPSocketServer {
+object TcpServer {
 
   def main(args: Array[String]): Unit = {
     val actorSystem = ActorSystem()
 
     import actorSystem.dispatcher
-
     import scala.concurrent.duration._
 
     val gameActor = actorSystem.actorOf(Props(classOf[GameActor]))

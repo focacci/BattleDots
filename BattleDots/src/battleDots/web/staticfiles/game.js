@@ -2,7 +2,7 @@ var socket = io.connect({transports: ['websocket']});
 socket.on('gameState', displayGame);
 
 var GAME = document.getElementById("game");
-var context = game.getContext("2d");
+var context = GAME.getContext("2d");
 context.globalCompositeOperation = 'source-over';
 
 function displayGame(json_game) {
@@ -16,12 +16,12 @@ function displayGame(json_game) {
   var players = game["players"];
   var bullets = game["bullets"];
 
-  for (let p of game["players"]) {
-    circle(players[p]["location"]["x"], players[p]["location"]["y"], 50, players[p]["username"] === socket.id ? '#0ec51f' : '#ce000d');
+  for (let p of players) {
+    circle(p["location"]["x"], p["location"]["y"], 50, p["username"] === socket.id ? '#0ec51f' : '#ce000d');
   }
 
-  for (const b of bullets) {
-    circle(bullets[b]["location"]["x"], bullets[b]["location"]["y"], 20, '#000000')
+  for (let b of bullets) {
+    circle(b["location"]["x"], b["location"]["y"], 20, '#000000')
   }
 }
 
@@ -40,8 +40,11 @@ function circle(x, y, size, color) {
 }
 
 function makeGameGrid(width, height) {
-  context.clearRect(0, 0, width, height)
+  context.clearRect(0, 0, width, height);
   context.strokeStyle = '#000000';
+
+  GAME.setAttribute("width", width);
+  GAME.setAttribute("height", height);
 
   context.beginPath();
   context.moveTo(0, 0);
