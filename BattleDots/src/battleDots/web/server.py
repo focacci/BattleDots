@@ -77,7 +77,7 @@ def key_state(json_inputs):
     elif inputs["s"] and not inputs["w"]:
         y = 1.0
 
-    if inputs["space"]:
+    if inputs["p"]:
         fire = True
 
     message = {"username": request.sid, "action": "move", "x": x, "y": y, "fire": fire}

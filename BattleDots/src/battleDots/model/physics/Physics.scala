@@ -15,8 +15,8 @@ object Physics {
 
 
   def computePotentialLocation(obj: PhysicalObject, dt: Double): PhysicsVector = {
-    val x = obj.location.x + dt * obj.velocity.x
-    val y = obj.location.y + dt * obj.velocity.y
+    val x = obj.location.x + (dt * obj.velocity.x)
+    val y = obj.location.y + (dt * obj.velocity.y)
     new PhysicsVector(x, y)
   }
 
@@ -40,6 +40,7 @@ object Physics {
       val boundaryCollision = detectBoundaryCollision(potentialLocation, game)
       if (!boundaryCollision) {
         obj.location = potentialLocation
+        println(obj.location.toString)
       } else {
         obj.collide()
       }

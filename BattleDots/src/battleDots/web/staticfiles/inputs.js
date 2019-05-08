@@ -3,12 +3,14 @@ var keyPressed = {
   "a": false,
   "s": false,
   "d": false,
-  "space": false
+  "p": false
 };
 
 function setState(key, value) {
-  keyPressed[key] = value;
-  socket.emit('inputs', JSON.stringify(keyPressed));
+  if (keyPressed[key] !== value) {
+    keyPressed[key] = value;
+    socket.emit('inputs', JSON.stringify(keyPressed));
+  }
 }
 
 function handleEvent(event, toSet) {
@@ -20,8 +22,8 @@ function handleEvent(event, toSet) {
     setState("s", toSet);
   } else if (event.key === "d") {
     setState("d", toSet);
-  } else if (event.key === "space") {
-    setState("space", toSet);
+  } else if (event.key === "p") {
+    setState("p", toSet);
   }
 }
 

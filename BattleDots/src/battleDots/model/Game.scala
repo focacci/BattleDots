@@ -9,19 +9,21 @@ class Game {
   val world: World = new World
 
   var players: Map[String, Player] = Map()
-  var player_size: Double = 3.0
+  var bullets: List[Bullet] = List()
+
+  var player_size: Double = 10.0
   var time: Long = System.nanoTime()
 
   var width: Int = 500
   var height: Int = 300
 
-  var bulletSpeed: Int = 2
-  val sightRange: Int = 10
+  var bulletSpeed: Double = .5
+  val sightRange: Int = 100
 
   def addPlayer(username: String): Unit = {
     val player: Player = new Player(username, startVector(), new PhysicsVector(0,0))
     this.players += (username -> player)
-    this.world.players = player :: this.world.players
+    this.world.objects = player :: this.world.objects
   }
 
   def removePlayer(username: String): Unit = {
@@ -51,7 +53,7 @@ class Game {
           "y" -> Json.toJson(player.location.y))),
         "health" -> Json.toJson(this.players(name).health),
         "username" -> Json.toJson(name)))})),
-      "bullets" -> Json.toJson(this.world.bullets.map({bullet =>Json.toJson(Map(
+      "bullets" -> Json.toJson(this.bullets.map({ bullet => Json.toJson(Map(
         "x" -> bullet.location.x,
         "y" -> bullet.location.y))}))
     )
@@ -64,7 +66,8 @@ class Game {
       val bullet: Bullet = new Bullet(username, playerLocation,
         new PhysicsVector(player.x - playerLocation.x, player.y - playerLocation.y).correctMagnitude(bulletSpeed)
       )
-      this.world.bullets = bullet :: this.world.bullets
+      this.world.objects = bullet :: this.world.objects
+      this.bullets = bullet :: this.bullets
     }
   }
 
@@ -83,8 +86,8 @@ class Game {
   }
 
   def checkForHits(): Unit = {
-    for (player <- this.world.players) {
-      for (bullet <- this.world.bullets) {
+    for ((_,player) <- this.players) {
+      for (bullet <- this.bullets) {
         if (player.location.distanceFrom(bullet.location) < this.player_size) {
           player.hitBy(bullet)
           bullet.hit(player)

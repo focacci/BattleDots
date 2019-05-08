@@ -23,7 +23,7 @@ function displayGame(json_game) {
   }
 
   for (let b of bullets) {
-    circle(b["location"]["x"], b["location"]["y"], 3, '#000000');
+    circle(b["x"], b["y"], 3, '#000000');
   }
 }
 

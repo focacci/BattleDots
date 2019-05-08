@@ -8,13 +8,13 @@ class Player(
             in_velocity: PhysicsVector
             ) extends PhysicalObject(in_location, in_velocity) {
 
-  var speed: Double = 5
+  var speed: Double = 0.3
   var health: Int = 5
 
   def move(dir: PhysicsVector): Unit = {
     val direction: PhysicsVector = dir.unitVector()
-    this.velocity.x = direction.x
-    this.velocity.y = direction.y
+    this.velocity.x = direction.x * this.speed
+    this.velocity.y = direction.y * this.speed
     println("New velocity:  " + this.velocity.toString)
   }
 
