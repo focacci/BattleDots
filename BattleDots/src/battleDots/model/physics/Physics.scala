@@ -47,6 +47,7 @@ object Physics {
     }
 
     world.objects = world.objects.filter(obj => obj.exists)
+    game.bullets = game.bullets.filter(bullet => bullet.exists)
   }
 
 

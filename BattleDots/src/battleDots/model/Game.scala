@@ -11,14 +11,14 @@ class Game {
   var players: Map[String, Player] = Map()
   var bullets: List[Bullet] = List()
 
-  var player_size: Double = 10.0
+  var player_size: Double = 20.0
   var time: Long = System.nanoTime()
 
   var width: Int = 500
   var height: Int = 300
 
-  var bulletSpeed: Double = .5
-  val sightRange: Int = 100
+  var bulletSpeed: Double = .3
+  val sightRange: Int = 200
 
   def addPlayer(username: String): Unit = {
     val player: Player = new Player(username, startVector(), new PhysicsVector(0,0))

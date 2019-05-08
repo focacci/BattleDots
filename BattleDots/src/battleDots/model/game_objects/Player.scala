@@ -8,7 +8,7 @@ class Player(
             in_velocity: PhysicsVector
             ) extends PhysicalObject(in_location, in_velocity) {
 
-  var speed: Double = 0.3
+  var speed: Double = 0.2
   var health: Int = 5
 
   def move(dir: PhysicsVector): Unit = {
