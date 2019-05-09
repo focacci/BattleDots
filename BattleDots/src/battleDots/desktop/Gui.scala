@@ -7,6 +7,7 @@ import io.socket.client.{IO, Socket}
 import io.socket.emitter.Emitter
 import javafx.application.Platform
 import javafx.event.ActionEvent
+import javafx.scene.input.KeyEvent
 import play.api.libs.json
 import play.api.libs.json.{JsValue, Json}
 import scalafx.application.JFXApp
@@ -15,7 +16,10 @@ import scalafx.scene.paint.Color
 import scalafx.scene.shape.{Circle, Rectangle, Shape}
 import scalafx.scene.{Group, Scene}
 
-class HandleMessagesFromPython() extends Emitter.Listener {
+
+
+
+class HandleMessagesFromPython extends Emitter.Listener {
   override def call(objects: Object*): Unit = {
     // Use runLater when interacting with the GUI
     Platform.runLater(() => {
@@ -68,8 +72,9 @@ object Gui extends JFXApp{
   var socket: Socket = IO.socket("localhost:1234/")
   socket.on("gameState", new HandleMessagesFromPython)
 
-  socket.connect()
-  //socket.emit("connect")
+
+  //socket.connect()
+  socket.emit("connect")
   var sceneGraphics: Group = new Group {}
 
   def drawPlayer(x: Double, y: Double, size: Int, color: String): Unit = {
@@ -133,8 +138,7 @@ object Gui extends JFXApp{
     this.title = "BattleDots"
     scene = new Scene(500.0, 300.0) {
       content = List(sceneGraphics)
-      //eventhandlers?
-
+      addEventHandler(KeyEvent.ANY, new Inputs)
     }
   }
 
