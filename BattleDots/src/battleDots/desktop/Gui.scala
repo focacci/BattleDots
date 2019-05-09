@@ -1,7 +1,6 @@
 package battleDots.desktop
 
 
-import battleDots.desktop.Gui.socket
 import battleDots.model.game_objects.Player
 import com.sun.xml.internal.ws.resources.HandlerMessages
 import io.socket.client.{IO, Socket}
@@ -25,7 +24,8 @@ class HandleMessagesFromPython() extends Emitter.Listener {
       val gridDimensions: Map[String, Int] = (gameState \ "gridDimensions").as[Map[String, Int]]
       var width = gridDimensions("width")
       var height = gridDimensions("height")
-      var players = (gameState \ "players").as[List[Map[String, JsValue]]]
+      val players = (gameState \ "players").as[List[Map[String, JsValue]]]
+      val bullets = (gameState \ "bullets").as[List[Map[String, Double]]]
 
 
       Gui.clearRect()
@@ -35,10 +35,16 @@ class HandleMessagesFromPython() extends Emitter.Listener {
         val y: Double = i("location")("y").as[Double]
         val username: String = i("username").as[String]
         var color: String = "#0ec51f"
-        if (username != socket.id()) {
+        if (username != Gui.socket.id()) {
           color = "#ce000d"
         }
         Gui.drawPlayer(x, y, 10, color)
+      }
+
+      for (bullet <- bullets) {
+        val x: Double = bullet("x")
+        val y: Double = bullet("y")
+        Gui.drawBullet(x, y, 3, "#000000")
       }
 
 
@@ -59,7 +65,7 @@ object Gui extends JFXApp{
 
 
 
-  var socket: Socket = IO.socket("http://localhost:1234/")
+  var socket: Socket = IO.socket("localhost:1234/")
   socket.on("gameState", new HandleMessagesFromPython)
 
   socket.connect()
@@ -74,6 +80,16 @@ object Gui extends JFXApp{
       fill = Color.web(color)
     }
     Gui.sceneGraphics.children.add(newPlayer)
+  }
+
+  def drawBullet(x: Double, y: Double, size: Int, color: String): Unit = {
+    val newBullet: Circle = new Circle {
+      centerX = x
+      centerY = y
+      radius = size
+      fill = Color.web(color)
+    }
+    Gui.sceneGraphics.children.add(newBullet)
   }
 
   def clearRect(): Unit = {
