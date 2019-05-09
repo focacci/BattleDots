@@ -15,7 +15,7 @@ class Player(
     val direction: PhysicsVector = dir.unitVector()
     this.velocity.x = direction.x * this.speed
     this.velocity.y = direction.y * this.speed
-    println("New velocity:  " + this.velocity.toString)
+    //println("New velocity:  " + this.velocity.toString)
   }
 
   def stop(): Unit = {

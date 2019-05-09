@@ -1,9 +1,126 @@
 package battleDots.desktop
 
-class Gui {
 
+import battleDots.desktop.Gui.socket
+import battleDots.model.game_objects.Player
+import com.sun.xml.internal.ws.resources.HandlerMessages
+import io.socket.client.{IO, Socket}
+import io.socket.emitter.Emitter
+import javafx.application.Platform
+import javafx.event.ActionEvent
+import play.api.libs.json
+import play.api.libs.json.{JsValue, Json}
+import scalafx.application.JFXApp
+import scalafx.application.JFXApp.PrimaryStage
+import scalafx.scene.paint.Color
+import scalafx.scene.shape.{Circle, Rectangle, Shape}
+import scalafx.scene.{Group, Scene}
+
+class HandleMessagesFromPython() extends Emitter.Listener {
+  override def call(objects: Object*): Unit = {
+    // Use runLater when interacting with the GUI
+    Platform.runLater(() => {
+      val jsonGameState = objects.apply(0).toString
+      val gameState: JsValue = Json.parse(jsonGameState)
+      val gridDimensions: Map[String, Int] = (gameState \ "gridDimensions").as[Map[String, Int]]
+      var width = gridDimensions("width")
+      var height = gridDimensions("height")
+      var players = (gameState \ "players").as[List[Map[String, JsValue]]]
+
+
+      Gui.clearRect()
+
+      for (i <- players) {
+        val x: Double = i("location")("x").as[Double]
+        val y: Double = i("location")("y").as[Double]
+        val username: String = i("username").as[String]
+        var color: String = "#0ec51f"
+        if (username != socket.id()) {
+          color = "#ce000d"
+        }
+        Gui.drawPlayer(x, y, 10, color)
+      }
+
+
+    })
+  }
 }
 
-object Gui {
+
+
+
+object Gui extends JFXApp{
+
+/*
+  var players: List[Map[String, JsValue]] = List()
+  var width: Int = 500
+  var height: Int = 300
+  */
+
+
+
+  var socket: Socket = IO.socket("http://localhost:1234/")
+  socket.on("gameState", new HandleMessagesFromPython)
+
+  socket.connect()
+  //socket.emit("connect")
+  var sceneGraphics: Group = new Group {}
+
+  def drawPlayer(x: Double, y: Double, size: Int, color: String): Unit = {
+    val newPlayer: Circle = new Circle {
+      centerX = x
+      centerY = y
+      radius = size
+      fill = Color.web(color)
+    }
+    Gui.sceneGraphics.children.add(newPlayer)
+  }
+
+  def clearRect(): Unit = {
+    var rect: Rectangle = new Rectangle() {
+      width = 500
+      height = 300
+      translateX = 0
+      translateY = 0
+      fill = Color.White
+    }
+    sceneGraphics.children.add(rect)
+  }
+/*
+  var allPlayers: List[Circle] = List()
+  var sceneGraphics: Group = new Group {}
+
+  def drawPlayer(x: Double, y: Double, size: Int, color: String): Unit = {
+    val newPlayer: Circle = new Circle {
+      centerX = x
+      centerY = y
+      radius = size
+      fill = Color.web(color)
+    }
+    sceneGraphics.children.add(newPlayer)
+    //allPlayers = newPlayer :: allPlayers
+  }
+
+  println(players + "hello")
+  for (i <- players) {
+    val x: Double = i("location")("x").as[Double]
+    val y: Double = i("location")("y").as[Double]
+    val username: String = i("username").as[String]
+    var color: String = "#0ec51f"
+    if (username != socket.id()) {
+      color = "#ce000d"
+    }
+    drawPlayer(x, y, 10, color)
+  }
+*/
+  this.stage = new PrimaryStage {
+    this.title = "BattleDots"
+    scene = new Scene(500.0, 300.0) {
+      content = List(sceneGraphics)
+      //eventhandlers?
+
+    }
+  }
+
 
 }

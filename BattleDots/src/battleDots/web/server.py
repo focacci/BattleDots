@@ -12,6 +12,8 @@ eventlet.monkey_patch()
 app = Flask(__name__)
 server = SocketIO(app)
 
+userToSid = {}
+sidToUser = {}
 # ** Connect to Scala TCP socket server **
 
 scala_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -33,6 +35,14 @@ def listen_to_scala(the_socket):
 
 def send_to_clients(data):
     server.emit('gameState', data, broadcast=True)
+
+###
+#def get_from_scala(data):
+#    gameState = json.loads(data)
+#    username = gameState["gameState"]
+#    user_socket = userToSid.get(username, None)
+#    if user_socket:
+#        server.emit('message', data, room=user_socket)
 
 
 def send_to_scala(data):

@@ -13,27 +13,15 @@ class GameActor extends Actor {
   val game: Game = new Game()
 
   override def receive: Receive = {
-    case m: AddPlayer =>
-      this.game.addPlayer(m.username)
+    case m: AddPlayer => game.addPlayer(m.username)
+    case m: RemovePlayer => game.removePlayer(m.username)
+    case m: MovePlayer => game.players(m.username).move(new PhysicsVector(m.x, m.y))
+    //println("Moving player: " + m.username)
+    case m: StopPlayer => game.players(m.username).stop()
 
-    case m: RemovePlayer =>
-      this.game.removePlayer(m.username)
-
-    case m: MovePlayer =>
-      println("Moving player: " + m.username)
-      this.game.players(m.username).move(new PhysicsVector(m.x, m.y))
-
-    case m: StopPlayer =>
-      this.game.players(m.username).stop()
-
-    case Update =>
-      this.game.update()
-
-    case SendGameState =>
-      sender() ! GameState(this.game.gameState())
-
-    case f: Fire =>
-      this.game.fire(f.username)
+    case Update => game.update()
+    case SendGameState => sender() ! GameState(game.gameState())
+    case f: Fire => game.fire(f.username)
   }
 
 

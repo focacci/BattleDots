@@ -40,7 +40,7 @@ object Physics {
       val boundaryCollision = detectBoundaryCollision(potentialLocation, game)
       if (!boundaryCollision) {
         obj.location = potentialLocation
-        println(obj.location.toString)
+        //println(obj.location.toString)
       } else {
         obj.collide()
       }

@@ -36,7 +36,7 @@ class TcpServer(gameActor: ActorRef) extends Actor {
 
     case r: Received =>
       buffer += r.data.utf8String
-      println(r.data.utf8String)
+      //println(r.data.utf8String)
       while (buffer.contains(delimiter)) {
         val curr = buffer.substring(0, buffer.indexOf(delimiter))
         buffer = buffer.substring(buffer.indexOf(delimiter) + 1)
@@ -56,7 +56,7 @@ class TcpServer(gameActor: ActorRef) extends Actor {
     val username = (message \ "username").as[String]
     val messageType = (message \ "action").as[String]
 
-    println("Received message: " + message.toString())
+    //println("Received message: " + message.toString())
 
     messageType match {
       case "connected" => gameActor ! AddPlayer(username)
