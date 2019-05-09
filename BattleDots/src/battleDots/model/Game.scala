@@ -32,7 +32,9 @@ class Game {
   }
 
   def startVector(): PhysicsVector = {
-    new PhysicsVector(250, 150)
+    //starts player at random spot on map
+    val r = scala.util.Random
+    new PhysicsVector(r.nextInt(500).toDouble, r.nextInt(300).toDouble)
   }
 
   def update(): Unit = {

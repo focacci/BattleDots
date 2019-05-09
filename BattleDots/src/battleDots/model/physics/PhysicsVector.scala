@@ -9,12 +9,12 @@ class PhysicsVector(
   }
 
   def unitVector(): PhysicsVector = {
-    if (this.x == 0 & this.y == 0) {
+    if (x == 0 & y == 0) {
       new PhysicsVector(0, 0)
     }
     else {
-      val magnitude =Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2))
-      new PhysicsVector(this.x / magnitude, this.y / magnitude)
+      val magnitude =Math.sqrt(Math.pow(this.x, 2.0) + Math.pow(this.y, 2.0))
+      new PhysicsVector(x / magnitude, y / magnitude)
     }
   }
 

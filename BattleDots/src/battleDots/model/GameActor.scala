@@ -16,7 +16,6 @@ class GameActor extends Actor {
     case m: AddPlayer => game.addPlayer(m.username)
     case m: RemovePlayer => game.removePlayer(m.username)
     case m: MovePlayer => game.players(m.username).move(new PhysicsVector(m.x, m.y))
-    //println("Moving player: " + m.username)
     case m: StopPlayer => game.players(m.username).stop()
 
     case Update => game.update()
