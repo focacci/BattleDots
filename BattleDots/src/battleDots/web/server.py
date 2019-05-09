@@ -71,7 +71,7 @@ def disconnect():
 @server.on('inputs')
 def key_state(json_inputs):
     inputs = json.loads(json_inputs)
-    print("Received inputs: " + json_inputs)
+    #print("Received inputs: " + json_inputs)
 
     x = 0.0
     y = 0.0

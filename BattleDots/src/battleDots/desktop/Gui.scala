@@ -1,21 +1,16 @@
 package battleDots.desktop
 
 
-import battleDots.model.game_objects.Player
-import com.sun.xml.internal.ws.resources.HandlerMessages
 import io.socket.client.{IO, Socket}
 import io.socket.emitter.Emitter
 import javafx.application.Platform
-import javafx.event.ActionEvent
 import javafx.scene.input.KeyEvent
-import play.api.libs.json
 import play.api.libs.json.{JsValue, Json}
 import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
 import scalafx.scene.paint.Color
-import scalafx.scene.shape.{Circle, Rectangle, Shape}
+import scalafx.scene.shape.{Circle, Rectangle}
 import scalafx.scene.{Group, Scene}
-
 
 
 
@@ -68,13 +63,21 @@ object Gui extends JFXApp{
   */
 
 
-
-  var socket: Socket = IO.socket("localhost:1234/")
+  var socket: Socket = IO.socket("http://localhost:1234/")
   socket.on("gameState", new HandleMessagesFromPython)
+  socket.connect()
 
+  var keyPressed: Map[String, Boolean] = Map(
+    "w" -> false,
+    "a" -> false,
+    "s" -> false,
+    "d" -> false,
+    "p" -> false
+  )
 
-  //socket.connect()
-  socket.emit("connect")
+  val pressed: Boolean = true
+  val released: Boolean = false
+
   var sceneGraphics: Group = new Group {}
 
   def drawPlayer(x: Double, y: Double, size: Int, color: String): Unit = {
@@ -98,7 +101,7 @@ object Gui extends JFXApp{
   }
 
   def clearRect(): Unit = {
-    var rect: Rectangle = new Rectangle() {
+    val rect: Rectangle = new Rectangle() {
       width = 500
       height = 300
       translateX = 0
@@ -107,38 +110,47 @@ object Gui extends JFXApp{
     }
     sceneGraphics.children.add(rect)
   }
-/*
-  var allPlayers: List[Circle] = List()
-  var sceneGraphics: Group = new Group {}
 
-  def drawPlayer(x: Double, y: Double, size: Int, color: String): Unit = {
-    val newPlayer: Circle = new Circle {
-      centerX = x
-      centerY = y
-      radius = size
-      fill = Color.web(color)
+
+
+  def keyStates(event: KeyEvent): Unit = {
+    val key = event.getCode
+    event.getEventType.getName match {
+      case "KEY_PRESSED" => key.getName match {
+        case "W" => setState("w", pressed)
+        case "A" => setState("a", pressed)
+        case "S" => setState("s", pressed)
+        case "D" => setState("d", pressed)
+        case "P" => setState("p", pressed)
+        case _ =>
+      }
+
+      case "KEY_RELEASED" => key.getName match {
+        case "W" => setState("w", released)
+        case "A" => setState("a", released)
+        case "S" => setState("s", released)
+        case "D" => setState("d", released)
+        case "P" => setState("p", released)
+        case _ =>
+      }
+      case _ =>
     }
-    sceneGraphics.children.add(newPlayer)
-    //allPlayers = newPlayer :: allPlayers
   }
 
-  println(players + "hello")
-  for (i <- players) {
-    val x: Double = i("location")("x").as[Double]
-    val y: Double = i("location")("y").as[Double]
-    val username: String = i("username").as[String]
-    var color: String = "#0ec51f"
-    if (username != socket.id()) {
-      color = "#ce000d"
+  def setState(key: String, value: Boolean): Unit = {
+    if (keyPressed(key) != value) {
+      keyPressed += (key -> value)
+      socket.emit("inputs", Json.toJson(keyPressed))
     }
-    drawPlayer(x, y, 10, color)
   }
-*/
+
+
   this.stage = new PrimaryStage {
     this.title = "BattleDots"
     scene = new Scene(500.0, 300.0) {
       content = List(sceneGraphics)
-      addEventHandler(KeyEvent.ANY, new Inputs)
+      addEventHandler(KeyEvent.ANY, (event: KeyEvent) => keyStates(event))
+
     }
   }
 
