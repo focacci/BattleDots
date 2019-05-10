@@ -56,12 +56,6 @@ class HandleMessagesFromPython extends Emitter.Listener {
 
 object Gui extends JFXApp{
 
-/*
-  var players: List[Map[String, JsValue]] = List()
-  var width: Int = 500
-  var height: Int = 300
-  */
-
 
   var socket: Socket = IO.socket("http://localhost:1234/")
   socket.on("gameState", new HandleMessagesFromPython)
@@ -142,7 +136,6 @@ object Gui extends JFXApp{
     if (keyPressed(key) != value) {
       keyPressed += (key -> value)
       socket.emit("inputs", Json.toJson(keyPressed))
-      //socket.emit()
     }
   }
 

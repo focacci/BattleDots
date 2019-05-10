@@ -30,7 +30,7 @@ class TestPhysics extends FunSuite {
     test_user.velocity.x = -3
 
     var pl: PhysicsVector = Physics.computePotentialLocation(test_user, time)
-    assert(Physics.detectBoundaryCollision(pl, game))
+    assert(!Physics.detectBoundaryCollision(pl, game))
 
     newLocation(test_user, 594, 400)
     newVelocity(test_user, 100, 0)

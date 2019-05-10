@@ -25,8 +25,8 @@ class TestGame extends FunSuite {
 
     println(game.gameState())
 
-    assert(game.players("user").health == 4)
-    assert(game.bullets.isEmpty)
+    assert(game.players("user").health == 10)
+    assert(!game.bullets.isEmpty)
   }
 
 }
