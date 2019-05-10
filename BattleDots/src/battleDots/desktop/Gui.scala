@@ -109,7 +109,7 @@ object Gui extends JFXApp{
       translateY = 0
       fill = Color.White
     }
-    sceneGraphics.children.add(rect)
+    Gui.sceneGraphics.children.add(rect)
   }
 
 
