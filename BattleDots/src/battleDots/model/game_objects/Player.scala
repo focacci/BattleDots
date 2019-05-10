@@ -4,12 +4,12 @@ import battleDots.model.physics.PhysicsVector
 
 class Player(
             val name: String,
-            in_location: PhysicsVector,
-            in_velocity: PhysicsVector
+            var in_location: PhysicsVector,
+            var in_velocity: PhysicsVector
             ) extends PhysicalObject(in_location, in_velocity) {
 
   var speed: Double = 0.2
-  var health: Int = 5
+  var health: Int = 10
 
   def move(dir: PhysicsVector): Unit = {
     val direction: PhysicsVector = dir.unitVector()
@@ -28,6 +28,10 @@ class Player(
     }
     if (this.health < 1) {
       this.location = this.in_location
+      val r = scala.util.Random
+      this.location = new PhysicsVector(r.nextInt(500).toDouble, r.nextInt(300).toDouble)
+      this.health = 10
+
     }
   }
 

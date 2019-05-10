@@ -53,6 +53,9 @@ class Game {
         "location" -> Json.toJson(Map(
           "x" -> Json.toJson(player.location.x),
           "y" -> Json.toJson(player.location.y))),
+        "velocity" -> Json.toJson(Map(
+          "vx" -> Json.toJson(player.velocity.x),
+          "vy" -> Json.toJson(player.velocity.y))),
         "health" -> Json.toJson(this.players(name).health),
         "username" -> Json.toJson(name)))})),
       "bullets" -> Json.toJson(this.bullets.map({ bullet => Json.toJson(Map(
@@ -62,6 +65,7 @@ class Game {
     Json.stringify(Json.toJson(gameState))
   }
 
+  /*
   def fire(username: String): Unit = { // fires a bullet at each player in range
     val playerLocation: PhysicsVector = this.players(username).location
     for (player <- playersInRange(username)) {
@@ -73,18 +77,52 @@ class Game {
     }
   }
 
-
   def playersInRange(username: String): List[PhysicsVector] = {
     val player: PhysicsVector = this.players(username).location
     val otherPlayers = this.players - username
     var playersInRange: List[PhysicsVector] = List()
 
     for ((_,otherPlayer) <- otherPlayers) {
+
       if (player.distanceFrom(otherPlayer.location) <= this.sightRange) {
         playersInRange = otherPlayer.location :: playersInRange
       }
     }
     playersInRange
+  }
+  */
+
+  def fire(username: String): Unit = {
+    val game = gameState()
+    val parsed: JsValue = Json.parse(game)
+    val players = (parsed \ "players").as[List[Map[String, JsValue]]]
+    var playerMap: Map[String, Player] = Map()
+
+    for (i <- players) {
+      val x = i("location")("x").as[Double]
+      val y = i("location")("y").as[Double]
+      val vx = i("velocity")("vx").as[Double]
+      val vy = i("velocity")("vy").as[Double]
+      val id = i("username").as[String]
+      val player: Player = new Player(id, new PhysicsVector(x, y), new PhysicsVector(vx, vy))
+        playerMap += (id -> player)
+    }
+    var mainPlayerLoc: PhysicsVector = new PhysicsVector(playerMap(username).location.x, playerMap(username).location.y)
+    var min: Double = 10000000.0
+    var minId: String = ""
+    for (j <- playerMap.keys) {
+      if(playerMap(j).location.distanceFrom(mainPlayerLoc) < min && (j != username)) {
+        min = playerMap(j).location.distanceFrom(mainPlayerLoc)
+        minId = j
+      }
+    }
+    if (min < sightRange) {
+      val bullet: Bullet = new Bullet(username, mainPlayerLoc,
+        new PhysicsVector(playerMap(minId).location.x - mainPlayerLoc.x, playerMap(minId).location.y - mainPlayerLoc.y).correctMagnitude(bulletSpeed)
+      )
+      this.world.objects = bullet :: this.world.objects
+      this.bullets = bullet :: this.bullets
+    }
   }
 
   def checkForHits(): Unit = {

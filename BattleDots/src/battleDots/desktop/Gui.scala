@@ -66,7 +66,7 @@ object Gui extends JFXApp{
   var socket: Socket = IO.socket("http://localhost:1234/")
   socket.on("gameState", new HandleMessagesFromPython)
   socket.connect()
-  socket.connect()
+
 
   var keyPressed: Map[String, Boolean] = Map(
     "w" -> false,
@@ -142,6 +142,7 @@ object Gui extends JFXApp{
     if (keyPressed(key) != value) {
       keyPressed += (key -> value)
       socket.emit("inputs", Json.toJson(keyPressed))
+      //socket.emit()
     }
   }
 

@@ -77,6 +77,8 @@ def key_state(json_inputs):
     y = 0.0
     fire = False
 
+    if inputs["p"]:
+        fire = True
     if inputs["a"] and not inputs["d"]:
         x = -1.0
     elif inputs["d"] and not inputs["a"]:
@@ -86,9 +88,6 @@ def key_state(json_inputs):
         y = -1.0
     elif inputs["s"] and not inputs["w"]:
         y = 1.0
-
-    if inputs["p"]:
-        fire = True
 
     message = {"username": request.sid, "action": "move", "x": x, "y": y, "fire": fire}
     send_to_scala(message)
